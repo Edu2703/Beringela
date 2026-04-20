@@ -15,7 +15,7 @@ const footerLinks = {
   ],
   suporte: [
     { label: "Contato", href: "mailto:contato@berinjela.com.br" },
-    { label: "WhatsApp", href: "#" },
+    { label: "WhatsApp", href: "https://wa.me/5541988739688" },
     { label: "Prazo de entrega", href: "#faq" },
     { label: "Trocas e devoluções", href: "#faq" },
   ],
@@ -60,7 +60,7 @@ export function Footer() {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://wa.me/5541988739688"
                 aria-label="WhatsApp da Berinjela"
                 className="flex items-center justify-center w-10 h-10 rounded-xl bg-surface-2 border border-border text-ink-muted hover:text-ink hover:border-gold/40 transition-all duration-200"
               >

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import { cn, formatCurrency } from "@/lib/utils";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
@@ -13,6 +15,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 32 }}
@@ -31,6 +35,26 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           <div className="h-[2px] w-32 rounded-full bg-gold-gradient" />
         </div>
       )}
+
+      {/* Product image */}
+      <div className="relative aspect-square overflow-hidden rounded-t-2xl bg-gradient-to-br from-amber-950/40 via-surface-2 to-violet-950/20">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_50%_40%,rgba(200,169,126,0.1)_0%,transparent_70%)]" />
+        {!imgError ? (
+          <Image
+            src={product.image}
+            alt={`${product.name} Berinjela — ${product.capsules} cápsulas`}
+            fill
+            className="object-contain p-8 drop-shadow-2xl"
+            sizes="(max-width: 768px) 90vw, 350px"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+            <span className="font-display text-3xl font-bold text-gold/30">Berinjela</span>
+            <span className="font-body text-sm text-ink-dim">{product.capsules} cápsulas</span>
+          </div>
+        )}
+      </div>
 
       <div className="p-6 md:p-8 flex flex-col gap-6 flex-1">
         {/* Header */}

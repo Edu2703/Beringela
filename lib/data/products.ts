@@ -31,7 +31,7 @@ export const products: Product[] = [
     pricePerCapsule: 6.66,
     pixPricePerCapsule: 4.99,
     benefits: ["30 cápsulas", "1 mês de uso", "Entrega discreta", "Resultado progressivo"],
-    image: "/images/produto-1.jpg",
+    image: "/images/produto-1.svg",
   },
   {
     id: "3-embalagens",
@@ -49,7 +49,7 @@ export const products: Product[] = [
     badgeVariant: "gold",
     featured: true,
     benefits: ["90 cápsulas", "3 meses de uso", "Entrega discreta", "Resultados consistentes"],
-    image: "/images/produto-3.jpg",
+    image: "/images/produto-3.svg",
   },
   {
     id: "6-embalagens",
@@ -66,6 +66,6 @@ export const products: Product[] = [
     badge: "Melhor custo-benefício",
     badgeVariant: "trust",
     benefits: ["180 cápsulas", "6 meses de uso", "Entrega discreta", "Maior economia"],
-    image: "/images/produto-6.jpg",
+    image: "/images/produto-6.svg",
   },
 ];

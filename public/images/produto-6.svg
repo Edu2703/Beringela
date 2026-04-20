@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <radialGradient id="bg6" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#C8A97E" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#0C0A08" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="800" fill="#161410"/>
+  <rect width="800" height="800" fill="url(#bg6)"/>
+  <!-- Row back: 3 bottles -->
+  <rect x="130" y="270" width="128" height="290" rx="15" fill="#F5F0E8" opacity="0.4"/>
+  <rect x="147" y="232" width="92" height="47" rx="7" fill="#E8E3DC" opacity="0.4"/>
+  <rect x="140" y="208" width="105" height="32" rx="6" fill="#2A2520" opacity="0.5"/>
+  <rect x="139" y="308" width="110" height="148" rx="6" fill="#7B35B8" opacity="0.35"/>
+  <text x="194" y="385" font-family="serif" font-size="18" font-weight="bold" fill="#F5D98E" text-anchor="middle" opacity="0.5">Berinjela</text>
+
+  <rect x="336" y="255" width="128" height="305" rx="15" fill="#F5F0E8" opacity="0.4"/>
+  <rect x="353" y="217" width="92" height="47" rx="7" fill="#E8E3DC" opacity="0.4"/>
+  <rect x="346" y="193" width="105" height="32" rx="6" fill="#2A2520" opacity="0.5"/>
+  <rect x="345" y="293" width="110" height="158" rx="6" fill="#7B35B8" opacity="0.35"/>
+  <text x="400" y="375" font-family="serif" font-size="18" font-weight="bold" fill="#F5D98E" text-anchor="middle" opacity="0.5">Berinjela</text>
+
+  <rect x="542" y="270" width="128" height="290" rx="15" fill="#F5F0E8" opacity="0.4"/>
+  <rect x="559" y="232" width="92" height="47" rx="7" fill="#E8E3DC" opacity="0.4"/>
+  <rect x="552" y="208" width="105" height="32" rx="6" fill="#2A2520" opacity="0.5"/>
+  <rect x="551" y="308" width="110" height="148" rx="6" fill="#7B35B8" opacity="0.35"/>
+  <text x="606" y="385" font-family="serif" font-size="18" font-weight="bold" fill="#F5D98E" text-anchor="middle" opacity="0.5">Berinjela</text>
+
+  <!-- Row front: 3 bottles -->
+  <rect x="60" y="320" width="140" height="310" rx="16" fill="#F5F0E8" opacity="0.75"/>
+  <rect x="79" y="277" width="100" height="52" rx="8" fill="#E8E3DC" opacity="0.75"/>
+  <rect x="71" y="250" width="116" height="35" rx="7" fill="#2A2520" opacity="0.85"/>
+  <rect x="69" y="360" width="122" height="165" rx="7" fill="#7B35B8" opacity="0.7"/>
+  <text x="130" y="445" font-family="serif" font-size="20" font-weight="bold" fill="#F5D98E" text-anchor="middle" opacity="0.8">Berinjela</text>
+
+  <!-- Center front (main) -->
+  <rect x="263" y="295" width="148" height="340" rx="17" fill="#F5F0E8" opacity="0.97"/>
+  <rect x="282" y="250" width="108" height="55" rx="9" fill="#E8E3DC" opacity="0.97"/>
+  <rect x="273" y="222" width="128" height="37" rx="8" fill="#2A2520"/>
+  <rect x="271" y="335" width="132" height="190" rx="8" fill="#7B35B8" opacity="0.92"/>
+  <rect x="271" y="335" width="132" height="190" rx="8" fill="url(#bg6)" opacity="0.2"/>
+  <rect x="282" y="344" width="110" height="2" rx="1" fill="#C8A97E" opacity="0.8"/>
+  <rect x="282" y="516" width="110" height="2" rx="1" fill="#C8A97E" opacity="0.8"/>
+  <text x="337" y="405" font-family="serif" font-size="24" font-weight="bold" fill="#F5D98E" text-anchor="middle">Berinjela</text>
+  <text x="337" y="432" font-family="sans-serif" font-size="11" fill="#F5F0E8" text-anchor="middle" opacity="0.85">30 cápsulas</text>
+  <text x="337" y="452" font-family="sans-serif" font-size="9" fill="#F5F0E8" text-anchor="middle" opacity="0.7">Uso diário: 1 cápsula</text>
+
+  <rect x="469" y="320" width="140" height="310" rx="16" fill="#F5F0E8" opacity="0.75"/>
+  <rect x="488" y="277" width="100" height="52" rx="8" fill="#E8E3DC" opacity="0.75"/>
+  <rect x="480" y="250" width="116" height="35" rx="7" fill="#2A2520" opacity="0.85"/>
+  <rect x="478" y="360" width="122" height="165" rx="7" fill="#7B35B8" opacity="0.7"/>
+  <text x="539" y="445" font-family="serif" font-size="20" font-weight="bold" fill="#F5D98E" text-anchor="middle" opacity="0.8">Berinjela</text>
+</svg>
