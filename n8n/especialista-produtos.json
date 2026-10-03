@@ -1,0 +1,194 @@
+{
+  "name": "Telegram - Especialista em Produtos - NOME DA LOJA",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "pergunta"
+            }
+          ]
+        }
+      },
+      "id": "b3d4208b-4a2e-4504-9aeb-6cb307da19ff",
+      "name": "Entrada",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "206049e3-b071-42fe-848a-f2ebf7f63c92",
+              "name": "nomeLoja",
+              "value": "NOME DA LOJA AQUI",
+              "type": "string"
+            },
+            {
+              "id": "cfb0c719-a1e9-4f16-a110-ba5335ab5c4f",
+              "name": "nuvemshopStoreId",
+              "value": "ID DA LOJA NA NUVEMSHOP",
+              "type": "string"
+            },
+            {
+              "id": "6cf05f84-e0e3-4d9a-b100-722ee53a92f8",
+              "name": "pergunta",
+              "value": "={{ $json.pergunta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ad1ffe9f-ec6b-4c4c-b68a-f68e3e211a43",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.pergunta }}",
+        "options": {
+          "systemMessage": "=Você é o especialista em produtos da loja {{ $('Config').first().json.nomeLoja }}. Quem fala com você é o atendente da loja, não o cliente.\n\nCOMO TRABALHAR\n- Use a ferramenta buscar_produtos para achar produtos. Faça várias buscas com palavras diferentes (sinônimos, categoria, material, marca) até achar boas opções.\n- Nunca invente produto, preço, estoque ou característica. Use só o que a ferramenta devolver.\n- Ignore produtos sem estoque (stock = 0). stock vazio/nulo significa estoque ilimitado.\n- Se houver promotional_price, esse é o preço atual.\n\nRESPONDA SEMPRE ASSIM (até 5 opções, da mais indicada para a menos):\n- Nome do produto e variação (cor/tamanho)\n- variant_id (obrigatório, o atendente precisa para gerar o pagamento)\n- Preço atual\n- Estoque\n- Link do produto (canonical_url)\n- 1 ou 2 frases explicando por que combina com o pedido, com base na descrição\n\nDepois das opções, sugira 1 ou 2 produtos complementares da tabela abaixo, quando fizer sentido, e busque-os também.\n\nPRODUTOS COMPLEMENTARES (principal → sugerir junto)\n- Próteses ou vibradores a pilha → pilhas; gel lubrificante; preservativos\n- Vibradores recarregáveis → higienizador de produtos\n- Vibradores em silicone ou cyber skin → gel neutro à base d'água\n- Noites comemorativas → óleo de massagem; venda; kit com pétalas; velas românticas\n- Bodystocking → máscara estilo baile veneziano; luvas; choker\n- Plug anal → gel dessensibilizante; ducha para higienização\n- Plug anal coração → choker coração\n- Masturbador masculino → gel neutro à base d'água; preservativo\n- Bomba peniana → suplemento vitamínico; anel peniano; gel potencializador\n- Capa peniana → preservativo; gel neutro à base d'água\n\nORIENTAÇÕES POR CATEGORIA\n- Vibradores e próteses: pergunte (pelo atendente) se prefere a pilha ou recarregável, tamanho, material e se é para uso solo ou casal, quando isso não estiver claro.\n- Cosméticos e géis: lembre que gel à base d'água é o único seguro para brinquedos de silicone.\n- Lingerie e fantasias: confirme tamanho e cor disponíveis na variação.",
+          "maxIterations": 8
+        }
+      },
+      "id": "5ae69e00-97d2-4d4a-b312-2b56c1ca4768",
+      "name": "Especialista",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "id",
+          "value": "claude-sonnet-5-5"
+        },
+        "options": {
+          "maxTokensToSample": 2048
+        }
+      },
+      "id": "542255fe-af19-44d5-bf3c-99d39abe59f7",
+      "name": "Claude",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Busca produtos publicados na loja por palavra-chave. Retorna nome, descrição, variações (variant_id, price, promotional_price, stock) e link.",
+        "url": "=https://api.nuvemshop.com.br/v1/{{ $('Config').first().json.nuvemshopStoreId }}/products",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $fromAI('termo', 'Palavra ou expressão curta para buscar no catálogo', 'string') }}"
+            },
+            {
+              "name": "published",
+              "value": "true"
+            },
+            {
+              "name": "per_page",
+              "value": "8"
+            },
+            {
+              "name": "fields",
+              "value": "id,name,description,variants,canonical_url"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Agente Telegram (SEU-EMAIL-AQUI)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e0d515d9-96f7-4720-8bf3-42ed3f0f1ec2",
+      "name": "buscar_produtos",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        600,
+        520
+      ]
+    }
+  ],
+  "connections": {
+    "Entrada": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Especialista",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Especialista",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscar_produtos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Especialista",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

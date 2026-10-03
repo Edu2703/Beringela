@@ -1,5 +1,5 @@
 {
-  "name": "Atendimento Telegram - NOME DA LOJA",
+  "name": "Telegram - Atendimento - NOME DA LOJA",
   "nodes": [
     {
       "parameters": {
@@ -8,7 +8,7 @@
         ],
         "additionalFields": {}
       },
-      "id": "0e14b1e8-5227-40d6-9411-7e789633d99c",
+      "id": "589051e1-5780-4c6e-80ec-1b206e81bc0a",
       "name": "Telegram - Mensagem recebida",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
@@ -16,7 +16,7 @@
         0,
         300
       ],
-      "webhookId": "e879df87-e28a-4322-a11e-c42cb5753526"
+      "webhookId": "63a2963a-b9d6-48ea-89e0-6a65c10a49c7"
     },
     {
       "parameters": {
@@ -29,7 +29,7 @@
           },
           "conditions": [
             {
-              "id": "ee851b4e-b02e-4d12-babf-7bd558d84ab2",
+              "id": "49fa3ff4-2b95-47dd-b0d5-083188bae9e3",
               "leftValue": "={{ $json.message.chat.type }}",
               "rightValue": "private",
               "operator": {
@@ -42,7 +42,7 @@
         },
         "options": {}
       },
-      "id": "17da22e9-06e0-4c41-a18d-41a3478ced6a",
+      "id": "145c9365-4e12-4f66-baef-ec6d3e7b6f8d",
       "name": "Somente conversa privada",
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.2,
@@ -56,61 +56,85 @@
         "assignments": {
           "assignments": [
             {
-              "id": "2ce239cf-a456-47eb-840e-5bc881de4622",
+              "id": "6a65d474-4d12-46db-a809-dd4a6fb34716",
+              "name": "loja",
+              "value": "sigilo | surpresinhas | seufetiche (deixe só uma)",
+              "type": "string"
+            },
+            {
+              "id": "faf48705-8265-4141-a6cf-c8c10952ee41",
               "name": "nomeLoja",
               "value": "NOME DA LOJA AQUI",
               "type": "string"
             },
             {
-              "id": "9ca220eb-2dd1-455c-a564-102ab3c27e8c",
+              "id": "f8cc9d6a-f891-43fc-982a-d9ca4192b676",
               "name": "descricaoLoja",
               "value": "Descreva em 1 ou 2 frases o que a loja vende e o estilo de atendimento.",
               "type": "string"
             },
             {
-              "id": "19cb5f0c-69c7-45a1-bdf4-186136fa2fad",
+              "id": "f2f4cebc-e0e8-4bf2-9a37-8669d6b5227e",
               "name": "linkSite",
               "value": "https://www.seusite.com.br",
               "type": "string"
             },
             {
-              "id": "9e9ad9ae-7390-4c9c-bca3-4496bf5b6bd8",
+              "id": "49cdc2be-cb71-49c9-bc1c-1d7a8250ea03",
               "name": "condicoesComerciais",
-              "value": "- Pagamento: Pix (5% de desconto) ou cartão em até 3x sem juros\n- Frete: grátis acima de R$ 199; abaixo disso calculado pelo CEP\n- Prazo de envio: até 2 dias úteis após pagamento\n- Trocas: até 7 dias após o recebimento, produto sem uso\n- Embalagem discreta, sem nome da loja",
+              "value": "- Pagamento: Pix ou cartão de crédito (link de pagamento)\n- Motoboy em Curitiba e região: taxa e horários consultados pelo CEP\n- Fora da área do motoboy: frete calculado na página de pagamento\n- Trocas: até 7 dias após o recebimento, produto sem uso\n- Embalagem discreta, sem nome da loja",
               "type": "string"
             },
             {
-              "id": "f2041766-6a44-4715-84b8-c26f6dc66754",
+              "id": "099d6e63-c420-4099-9148-7220aafb4e2a",
               "name": "cupomTelegram",
               "value": "TELEGRAM10 - 10% de desconto em compras feitas pelo Telegram",
               "type": "string"
             },
             {
-              "id": "7395ec6f-20b8-4eed-8306-a565a95f17eb",
+              "id": "139a3cdb-45d5-4011-86d8-6c4ed2f39d2e",
               "name": "chatIdEquipe",
               "value": "COLE AQUI O CHAT ID DO GRUPO DA EQUIPE",
               "type": "string"
             },
             {
-              "id": "99437ee1-3402-4a5d-8743-0ff1d270bf9c",
+              "id": "7c0bf7b0-2f11-4a53-bf76-68136c8d726c",
+              "name": "idsLojaBling",
+              "value": "IDS MULTILOJA DO BLING, SEPARADOS POR VÍRGULA",
+              "type": "string"
+            },
+            {
+              "id": "f60ee762-8a9a-44ee-817d-1f1e77b9f6c2",
+              "name": "nuvemshopStoreId",
+              "value": "ID DA LOJA NA NUVEMSHOP",
+              "type": "string"
+            },
+            {
+              "id": "9fdf35c9-638c-4dcb-9298-2d3c2c2d36ca",
+              "name": "variantesTaxaMotoboy",
+              "value": "{}",
+              "type": "string"
+            },
+            {
+              "id": "37bf6d54-ad15-4bf1-a654-f26295b92649",
               "name": "chatId",
               "value": "={{ $json.message.chat.id }}",
               "type": "string"
             },
             {
-              "id": "41466aa8-1f95-453a-910c-47e885ef946d",
+              "id": "3014e415-7b6d-4f6d-a6d6-0f60809f43aa",
               "name": "texto",
               "value": "={{ $json.message.text }}",
               "type": "string"
             },
             {
-              "id": "d930c127-fe8e-43f0-a355-3760c24e89c2",
+              "id": "75a7c23f-5308-4be5-960c-b6158efa9b12",
               "name": "nomeCliente",
               "value": "={{ $json.message.from.first_name }} {{ $json.message.from.last_name || '' }}",
               "type": "string"
             },
             {
-              "id": "aaed08fd-78b6-4176-a8c9-752bb3d22ee3",
+              "id": "1286b896-bb0d-4e16-8c4c-51bd89c06953",
               "name": "usuarioCliente",
               "value": "={{ $json.message.from.username || 'sem usuário' }}",
               "type": "string"
@@ -119,7 +143,7 @@
         },
         "options": {}
       },
-      "id": "904dfded-c0a7-48eb-905c-822ec602fa57",
+      "id": "7ab075e0-cc90-4d6e-ad89-4a54eeacde0b",
       "name": "Config da Loja",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
@@ -139,7 +163,7 @@
           },
           "conditions": [
             {
-              "id": "6b75b93c-e502-486a-85b9-a3474216fd18",
+              "id": "9e9b75d7-ffbf-422d-8692-5185471b09c9",
               "leftValue": "={{ $json.texto }}",
               "rightValue": "",
               "operator": {
@@ -153,7 +177,7 @@
         },
         "options": {}
       },
-      "id": "1439da46-87c6-4c8d-a149-96ca852b9897",
+      "id": "58cbe7f9-17f9-41fa-b70d-c2610bf2437c",
       "name": "É texto?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -167,12 +191,12 @@
         "promptType": "define",
         "text": "={{ $json.texto }}",
         "options": {
-          "systemMessage": "=Você é o atendente virtual da loja {{ $('Config da Loja').item.json.nomeLoja }} no Telegram.\nSobre a loja: {{ $('Config da Loja').item.json.descricaoLoja }}\nSite: {{ $('Config da Loja').item.json.linkSite }}\nNome do cliente no Telegram: {{ $('Config da Loja').item.json.nomeCliente }}\nData e hora agora: {{ $now.setZone('America/Sao_Paulo').toFormat('dd/MM/yyyy HH:mm') }}\n\nCONDIÇÕES COMERCIAIS DESTA LOJA (use somente estas):\n{{ $('Config da Loja').item.json.condicoesComerciais }}\n\nCUPOM EXCLUSIVO DO TELEGRAM: {{ $('Config da Loja').item.json.cupomTelegram }}\n\nSEU TRABALHO\n1. Tirar dúvidas sobre produtos, preços, estoque, pagamento, frete e trocas.\n2. Vender: ajudar o cliente a escolher, montar o pedido e fechar a compra.\n3. Informar status de pedido e entrega.\n4. Chamar a equipe humana quando precisar.\n\nREGRAS OBRIGATÓRIAS\n- Você atende SOMENTE a loja {{ $('Config da Loja').item.json.nomeLoja }}. Nunca fale de outras lojas, nunca use informações de outras lojas e nunca diga que existem outras lojas do mesmo dono.\n- Preço e estoque: SEMPRE consulte a ferramenta buscar_produtos antes de informar. Nunca invente preço, prazo, desconto ou condição. Se não encontrar, diga que vai verificar com a equipe e use chamar_equipe.\n- Nunca ofereça desconto além do cupom do Telegram e das condições acima.\n- Dados de pedido (status, itens, valores, rastreio) só podem ser passados se o cliente informar o NÚMERO DO PEDIDO e o CPF/CNPJ, e o CPF/CNPJ informado for igual ao do cliente do pedido (campo contato.numeroDocumento). Compare só os números, ignorando pontos e traços. Se não bater, diga apenas que não encontrou um pedido com esses dados. Nunca revele nome, endereço ou dados de outra pessoa.\n- Para consultar pedido: use consultar_pedido_por_numero para achar o id interno, depois detalhes_do_pedido com esse id, e consultar_situacao com o id da situação para saber o nome do status. Se houver código de rastreio, informe.\n- Venda: quando o cliente decidir comprar, confirme os itens, quantidades e preços (consultados na ferramenta), aplique o cupom do Telegram e peça: nome completo, CPF, CEP, endereço completo com número e complemento, e forma de pagamento desejada. Mostre o resumo e peça confirmação. Só depois da confirmação use registrar_venda. Diga ao cliente que a equipe vai entrar em contato para enviar o pagamento.\n- Use chamar_equipe quando: o cliente pedir para falar com uma pessoa, reclamar, pedir troca/devolução, tiver problema com pedido, ou quando você não souber responder.\n- Escreva mensagens curtas, simpáticas e em português do Brasil. Não use formatação Markdown (asteriscos, cerquilhas). Pode usar emojis com moderação.\n- Se a mensagem for /start, dê boas-vindas, apresente a loja em uma frase e lembre do cupom exclusivo do Telegram.",
-          "maxIterations": 10
+          "systemMessage": "=Você é o atendente virtual da loja {{ $('Config da Loja').item.json.nomeLoja }} no Telegram.\nSobre a loja: {{ $('Config da Loja').item.json.descricaoLoja }}\nSite: {{ $('Config da Loja').item.json.linkSite }}\nNome do cliente no Telegram: {{ $('Config da Loja').item.json.nomeCliente }}\nData e hora agora: {{ $now.setZone('America/Sao_Paulo').toFormat('cccc, dd/MM/yyyy HH:mm', { locale: 'pt-BR' }) }}\n\nCONDIÇÕES COMERCIAIS DESTA LOJA (use somente estas):\n{{ $('Config da Loja').item.json.condicoesComerciais }}\n\nCUPOM EXCLUSIVO DO TELEGRAM: {{ $('Config da Loja').item.json.cupomTelegram }}\nVARIANTES DA TAXA DE MOTOBOY (valor → variant_id): {{ $('Config da Loja').item.json.variantesTaxaMotoboy }}\n\nSUAS FERRAMENTAS\n- especialista_produtos: para QUALQUER dúvida sobre produto, preço, estoque, indicação ou comparação. Explique bem o que o cliente procura.\n- consultar_entrega_motoboy: recebe o CEP e devolve se o motoboy atende, a taxa e os próximos horários disponíveis.\n- consultar_pedido: status, itens e rastreio de um pedido. Precisa do número do pedido e do CPF/CNPJ do comprador.\n- gerar_link_pagamento: cria o pedido na loja e devolve o link de pagamento (Pix ou cartão).\n- registrar_venda: avisa a equipe da venda, depois que o link foi gerado.\n- chamar_equipe: chama um humano.\n\nREGRAS OBRIGATÓRIAS\n- Você atende SOMENTE a loja {{ $('Config da Loja').item.json.nomeLoja }}. Nunca fale de outras lojas nem diga que existem outras lojas do mesmo dono.\n- Nunca invente preço, estoque, prazo, horário, taxa, desconto ou condição. Tudo vem das ferramentas ou das condições acima.\n- Horários de entrega: ofereça SOMENTE os horários que consultar_entrega_motoboy devolver, exatamente como vieram. Nunca calcule horário por conta própria. Se o motoboy não atende o CEP, diga que a entrega é pelo frete normal, calculado na página de pagamento.\n- Pedidos: só passe informações se consultar_pedido devolver o pedido. Se devolver que não encontrou, diga apenas isso. Nunca revele dados de outra pessoa.\n- Nunca ofereça desconto além do cupom do Telegram e das condições acima.\n\nCOMO FECHAR UMA VENDA\n1. Confirme os produtos, variações e quantidades (com variant_id e preço vindos do especialista).\n2. Peça o CEP e use consultar_entrega_motoboy. Se atender, o cliente escolhe um dos horários devolvidos.\n3. Peça: nome e sobrenome, e-mail, telefone com DDD, CPF e endereço completo (rua, número, complemento, bairro, cidade).\n4. Mostre o resumo: itens, subtotal, taxa de entrega, horário escolhido e total. Lembre do cupom do Telegram, que o cliente digita na página de pagamento. Peça confirmação.\n5. Com a confirmação, use gerar_link_pagamento. Inclua nos produtos a variante da taxa de motoboy correspondente ao valor da taxa, se ela existir na lista acima. Coloque na observação o CPF, endereço completo, forma de entrega, horário escolhido e taxa.\n6. Envie o link (checkout_url) ao cliente. Avise que o pagamento precisa ser feito até o horário limite (pagar_ate) para manter o horário escolhido.\n7. Use registrar_venda com o resumo completo e o link.\n\nQUANDO CHAMAR A EQUIPE\nCliente pede para falar com uma pessoa, reclamação, troca/devolução, problema com pedido ou pagamento, erro em alguma ferramenta, ou quando você não souber responder.\n\nESTILO\nMensagens curtas, simpáticas, discretas e em português do Brasil. Sem formatação Markdown (asteriscos, cerquilhas). Emojis com moderação.\nSe a mensagem for /start, dê boas-vindas, apresente a loja em uma frase e lembre do cupom exclusivo do Telegram.",
+          "maxIterations": 15
         }
       },
-      "id": "dd5c7477-7e3d-4aa3-9f39-d35fc8003216",
-      "name": "Agente de Atendimento",
+      "id": "9e79044d-e3f4-4212-91c8-fdf1b6e37820",
+      "name": "Atendente",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.8,
       "position": [
@@ -188,148 +212,202 @@
           "value": "claude-sonnet-5-5"
         },
         "options": {
-          "maxTokensToSample": 1024
+          "maxTokensToSample": 2048
         }
       },
-      "id": "986fa8a0-6739-42e3-8e29-422f80641e3b",
+      "id": "fa16ea33-9c74-41d1-b3fa-2b215b2ef676",
       "name": "Claude",
       "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
       "typeVersion": 1.3,
       "position": [
-        620,
-        520
+        500,
+        560
       ]
     },
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Config da Loja').item.json.nomeLoja }}-{{ $('Config da Loja').item.json.chatId }}",
-        "contextWindowLength": 20
+        "sessionKey": "={{ $('Config da Loja').item.json.loja }}-{{ $('Config da Loja').item.json.chatId }}",
+        "tableName": "telegram_chat_memoria",
+        "contextWindowLength": 30
       },
-      "id": "14f34a61-66aa-4bcd-838e-264701237db4",
+      "id": "0580bfca-c55e-447c-ac91-2140e965172e",
       "name": "Memória da conversa",
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
+        640,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Especialista em produtos da loja. Use para qualquer dúvida sobre produto, preço, estoque, indicação ou comparação. Devolve opções com variant_id, preço, estoque e link.",
+        "workflowId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": ""
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "pergunta": "={{ $fromAI('pergunta', 'O que o cliente procura, com todos os detalhes úteis: uso, preferências, tamanho, cor, faixa de preço', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "pergunta",
+              "displayName": "pergunta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "id": "b6342b1d-c048-48a3-9f07-9aaa90a9eded",
+      "name": "especialista_produtos",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
         780,
-        520
+        560
       ]
     },
     {
       "parameters": {
-        "toolDescription": "Busca produtos da loja no Bling pelo nome. Retorna preço (campo preco) e estoque (estoque.saldoVirtualTotal). Use sempre antes de informar preço ou disponibilidade.",
-        "method": "GET",
-        "url": "https://api.bling.com.br/Api/v3/produtos",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "oAuth2Api",
-        "options": {},
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
+        "description": "Consulta status, itens, valores e rastreio de um pedido. Precisa do número do pedido e do CPF/CNPJ do comprador.",
+        "workflowId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": ""
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "numeroPedido": "={{ $fromAI('numeroPedido', 'Número do pedido informado pelo cliente', 'string') }}",
+            "cpf": "={{ $fromAI('cpf', 'CPF ou CNPJ informado pelo cliente', 'string') }}",
+            "idsLoja": "={{ $('Config da Loja').item.json.idsLojaBling }}"
+          },
+          "matchingColumns": [],
+          "schema": [
             {
-              "name": "nome",
-              "value": "={{ $fromAI('nome', 'Parte do nome do produto que o cliente procura', 'string') }}"
+              "id": "numeroPedido",
+              "displayName": "numeroPedido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
             },
             {
-              "name": "criterio",
-              "value": "2"
+              "id": "cpf",
+              "displayName": "cpf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
             },
             {
-              "name": "limite",
-              "value": "10"
+              "id": "idsLoja",
+              "displayName": "idsLoja",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
             }
-          ]
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         }
       },
-      "id": "67547b2a-de0d-4721-afbc-8985957879cb",
-      "name": "buscar_produtos",
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.2,
+      "id": "7055ba59-dcf5-4ef6-891c-82db0b7548c0",
+      "name": "consultar_pedido",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
       "position": [
-        940,
-        520
-      ]
-    },
-    {
-      "parameters": {
-        "toolDescription": "Procura um pedido de venda pelo número que o cliente informou. Retorna o id interno do pedido, que deve ser usado em detalhes_do_pedido.",
-        "method": "GET",
-        "url": "https://api.bling.com.br/Api/v3/pedidos/vendas",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "oAuth2Api",
-        "options": {},
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "numero",
-              "value": "={{ $fromAI('numero', 'Número do pedido informado pelo cliente, só números', 'number') }}"
-            }
-          ]
-        }
-      },
-      "id": "af4dcca8-b152-400d-900d-b076433bde63",
-      "name": "consultar_pedido_por_numero",
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.2,
-      "position": [
-        1100,
-        520
-      ]
-    },
-    {
-      "parameters": {
-        "toolDescription": "Traz os detalhes de um pedido: itens, valores, CPF/CNPJ do cliente (contato.numeroDocumento), id da situação e dados de transporte/rastreio. Precisa do id interno vindo de consultar_pedido_por_numero.",
-        "method": "GET",
-        "url": "=https://api.bling.com.br/Api/v3/pedidos/vendas/{{ $fromAI('idPedido', 'Id interno do pedido (campo id, não o número)', 'number') }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "oAuth2Api",
-        "options": {}
-      },
-      "id": "755e767f-f6be-4256-a167-44a01d46cb7b",
-      "name": "detalhes_do_pedido",
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.2,
-      "position": [
-        1260,
-        520
-      ]
-    },
-    {
-      "parameters": {
-        "toolDescription": "Traduz o id da situação de um pedido para o nome do status (ex.: Em aberto, Atendido, Enviado).",
-        "method": "GET",
-        "url": "=https://api.bling.com.br/Api/v3/situacoes/{{ $fromAI('idSituacao', 'Id da situação do pedido (campo situacao.id)', 'number') }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "oAuth2Api",
-        "options": {}
-      },
-      "id": "82ebf6db-441a-4525-87bd-a07ba7d5e6c7",
-      "name": "consultar_situacao",
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.2,
-      "position": [
-        1420,
-        520
+        920,
+        560
       ]
     },
     {
       "parameters": {
         "descriptionType": "manual",
-        "toolDescription": "Envia para a equipe um pedido fechado e confirmado pelo cliente. A mensagem deve conter: itens, quantidades, preços, cupom aplicado, total, nome completo, CPF, CEP, endereço completo e forma de pagamento.",
+        "toolDescription": "Recebe o CEP do cliente e devolve se o motoboy atende, a taxa de entrega e os próximos horários disponíveis (já considerando a hora atual, dias e feriados).",
+        "operation": "executeQuery",
+        "query": "select public.consultar_entrega_motoboy($1, $2) as resultado",
+        "options": {
+          "queryReplacement": "={{ $('Config da Loja').item.json.loja }},{{ $fromAI('cep', 'CEP do cliente, só números', 'string') }}"
+        }
+      },
+      "id": "cdd1bd4b-d315-4467-85e9-ee47e2e7a108",
+      "name": "consultar_entrega_motoboy",
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        1060,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Cria o pedido na loja e devolve o link de pagamento (campo checkout_url). Use só depois que o cliente confirmar o resumo.",
+        "method": "POST",
+        "url": "=https://api.nuvemshop.com.br/v1/{{ $('Config da Loja').item.json.nuvemshopStoreId }}/draft_orders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Agente Telegram (SEU-EMAIL-AQUI)"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contact_name: $fromAI('nome', 'Primeiro nome do cliente', 'string'), contact_lastname: $fromAI('sobrenome', 'Sobrenome do cliente', 'string'), contact_email: $fromAI('email', 'E-mail do cliente', 'string'), contact_phone: $fromAI('telefone', 'Telefone com DDD', 'string'), payment_status: 'unpaid', products: JSON.parse($fromAI('produtos', 'Lista em JSON, exemplo: [{\"variant_id\": 123, \"quantity\": 1}]', 'string')), note: $fromAI('observacao', 'CPF, endereço completo, forma de entrega, horário escolhido e taxa de entrega', 'string') + ' | Pedido feito pelo Telegram' }) }}",
+        "options": {}
+      },
+      "id": "921a3d89-af2e-409e-9aa9-df0213feaf4d",
+      "name": "gerar_link_pagamento",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Avisa a equipe de uma venda com link de pagamento gerado. Inclua itens, quantidades, preços, taxa, total, horário de entrega, nome, CPF, endereço e o link.",
         "chatId": "={{ $('Config da Loja').item.json.chatIdEquipe }}",
         "text": "=🛒 NOVA VENDA PELO TELEGRAM\nLoja: {{ $('Config da Loja').item.json.nomeLoja }}\nCliente: {{ $('Config da Loja').item.json.nomeCliente }} (@{{ $('Config da Loja').item.json.usuarioCliente }})\nChat ID: {{ $('Config da Loja').item.json.chatId }}\n\n{{ $fromAI('mensagem', 'Resumo completo para a equipe', 'string') }}",
         "additionalFields": {
           "appendAttribution": false
         }
       },
-      "id": "08ead533-3cee-406e-ac37-f77a4b1c0fc1",
+      "id": "d65ffb4e-8719-4629-b72c-ddcd52e616b0",
       "name": "registrar_venda",
       "type": "n8n-nodes-base.telegramTool",
       "typeVersion": 1.2,
       "position": [
-        1580,
-        520
+        1340,
+        560
       ]
     },
     {
@@ -342,13 +420,13 @@
           "appendAttribution": false
         }
       },
-      "id": "5c732d42-f2d4-4e40-b0a5-91b3c82c375c",
+      "id": "9ec8f9ca-91bf-440f-9076-1b97ec6c40ac",
       "name": "chamar_equipe",
       "type": "n8n-nodes-base.telegramTool",
       "typeVersion": 1.2,
       "position": [
-        1740,
-        520
+        1480,
+        560
       ]
     },
     {
@@ -359,7 +437,7 @@
           "appendAttribution": false
         }
       },
-      "id": "ca027c9b-c147-4689-9e53-6ba3df1764a2",
+      "id": "24d7b940-a540-43aa-8a92-b9fbd14cf20f",
       "name": "Responder cliente",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -367,7 +445,7 @@
         1300,
         200
       ],
-      "webhookId": "f96a75c9-1b04-4236-9f6f-6d5bd366619c"
+      "webhookId": "bc7b0ce6-3aad-4eed-8443-61feea5d75be"
     },
     {
       "parameters": {
@@ -377,7 +455,7 @@
           "appendAttribution": false
         }
       },
-      "id": "f60b42ef-92ca-498b-8e83-d83c019b469b",
+      "id": "a5443ee1-18fa-4e96-9e7e-8f8ffa88bad2",
       "name": "Avisar que só lê texto",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -385,7 +463,7 @@
         900,
         400
       ],
-      "webhookId": "97804ea7-1c9c-4c57-8aef-7fc7d2ed7978"
+      "webhookId": "b1fcd2e7-6c9d-49a7-986b-0ee72c73f826"
     }
   ],
   "connections": {
@@ -426,7 +504,7 @@
       "main": [
         [
           {
-            "node": "Agente de Atendimento",
+            "node": "Atendente",
             "type": "main",
             "index": 0
           }
@@ -440,7 +518,7 @@
         ]
       ]
     },
-    "Agente de Atendimento": {
+    "Atendente": {
       "main": [
         [
           {
@@ -455,7 +533,7 @@
       "ai_languageModel": [
         [
           {
-            "node": "Agente de Atendimento",
+            "node": "Atendente",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -466,51 +544,51 @@
       "ai_memory": [
         [
           {
-            "node": "Agente de Atendimento",
+            "node": "Atendente",
             "type": "ai_memory",
             "index": 0
           }
         ]
       ]
     },
-    "buscar_produtos": {
+    "especialista_produtos": {
       "ai_tool": [
         [
           {
-            "node": "Agente de Atendimento",
+            "node": "Atendente",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "consultar_pedido_por_numero": {
+    "consultar_pedido": {
       "ai_tool": [
         [
           {
-            "node": "Agente de Atendimento",
+            "node": "Atendente",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "detalhes_do_pedido": {
+    "consultar_entrega_motoboy": {
       "ai_tool": [
         [
           {
-            "node": "Agente de Atendimento",
+            "node": "Atendente",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "consultar_situacao": {
+    "gerar_link_pagamento": {
       "ai_tool": [
         [
           {
-            "node": "Agente de Atendimento",
+            "node": "Atendente",
             "type": "ai_tool",
             "index": 0
           }
@@ -521,7 +599,7 @@
       "ai_tool": [
         [
           {
-            "node": "Agente de Atendimento",
+            "node": "Atendente",
             "type": "ai_tool",
             "index": 0
           }
@@ -532,7 +610,7 @@
       "ai_tool": [
         [
           {
-            "node": "Agente de Atendimento",
+            "node": "Atendente",
             "type": "ai_tool",
             "index": 0
           }

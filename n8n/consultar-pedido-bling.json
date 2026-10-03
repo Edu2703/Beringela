@@ -1,0 +1,365 @@
+{
+  "name": "Telegram - Consultar Pedido Bling",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "numeroPedido"
+            },
+            {
+              "name": "cpf"
+            },
+            {
+              "name": "idsLoja"
+            }
+          ]
+        }
+      },
+      "id": "c6252e3e-d9c7-40b4-aff1-4f44ea7144a8",
+      "name": "Entrada",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.bling.com.br/Api/v3/pedidos/vendas",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {},
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "numero",
+              "value": "={{ $('Entrada').first().json.numeroPedido.replace(/\\D/g, '') }}"
+            }
+          ]
+        }
+      },
+      "id": "63620728-7474-46bf-8d7c-92eea0d086ed",
+      "name": "Buscar pelo número Bling",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        300
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.bling.com.br/Api/v3/pedidos/vendas",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {},
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "numerosLojas[]",
+              "value": "={{ $('Entrada').first().json.numeroPedido.replace(/\\D/g, '') }}"
+            }
+          ]
+        }
+      },
+      "id": "7c3f8229-4ac7-479d-bb41-4e20b4df0183",
+      "name": "Buscar pelo número do site",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        300
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Só aceita pedidos das lojas (IDs multiloja) desta marca\nconst ids = String($('Entrada').first().json.idsLoja).split(',').map(s => s.trim());\nconst lista = [\n  ...($('Buscar pelo número Bling').first().json.data || []),\n  ...($('Buscar pelo número do site').first().json.data || []),\n];\nconst pedido = lista.find(p => ids.includes(String(p.loja && p.loja.id)));\nreturn [{ json: { encontrado: !!pedido, idPedido: pedido ? pedido.id : null } }];"
+      },
+      "id": "77552689-f5ab-4431-8277-06b7d4896229",
+      "name": "Escolher pedido da loja",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "318a1f6e-a492-4afd-aa4a-294043224fb2",
+              "leftValue": "={{ $json.encontrado }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "09bd8c0a-80ea-4397-ad1e-5770af8edf38",
+      "name": "Achou?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.bling.com.br/Api/v3/pedidos/vendas/{{ $json.idPedido }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "id": "788e1be8-220b-4780-91dc-387b802128b3",
+      "name": "Detalhes do pedido",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        200
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Só libera os dados se o CPF/CNPJ informado for o do cliente do pedido\nconst p = $json.data || {};\nconst ids = String($('Entrada').first().json.idsLoja).split(',').map(s => s.trim());\nconst so = v => String(v || '').replace(/\\D/g, '');\nconst cpfInformado = so($('Entrada').first().json.cpf);\nconst cpfPedido = so(p.contato && p.contato.numeroDocumento);\nif (!cpfInformado || cpfInformado !== cpfPedido || !ids.includes(String(p.loja && p.loja.id))) {\n  return [{ json: { ok: false } }];\n}\nconst t = p.transporte || {};\nreturn [{ json: {\n  ok: true,\n  situacaoId: p.situacao && p.situacao.id,\n  pedido: {\n    numero: p.numero,\n    numeroSite: p.numeroLoja,\n    data: p.data,\n    dataSaida: p.dataSaida,\n    cliente: p.contato && p.contato.nome,\n    itens: (p.itens || []).map(i => ({ produto: i.descricao, quantidade: i.quantidade, valor: i.valor })),\n    totalProdutos: p.totalProdutos,\n    frete: t.frete,\n    total: p.total,\n    transportadora: t.contato && t.contato.nome,\n    rastreios: (t.volumes || []).map(v => ({ servico: v.servico, codigo: v.codigoRastreamento })).filter(v => v.codigo),\n  },\n} }];"
+      },
+      "id": "ef117637-61d0-4c53-9b84-c2c50457e042",
+      "name": "Conferir CPF",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e2d3b863-c989-45b6-aa8b-3426dc3ded3c",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9958a1d2-0579-4a1a-b3c0-d4e41288ba9d",
+      "name": "CPF confere?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1540,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.bling.com.br/Api/v3/situacoes/{{ $json.situacaoId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "id": "cc674103-5230-4b9d-bbb8-be87bb8d86fd",
+      "name": "Nome da situação",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        100
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const pedido = $('Conferir CPF').first().json.pedido;\nconst situacao = ($json.data && $json.data.nome) || 'não identificada';\nreturn [{ json: { resultado: { ...pedido, status: situacao } } }];"
+      },
+      "id": "f9d2f6cc-7a63-43a1-af9f-867116c1b19d",
+      "name": "Resposta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eda279b4-7dea-44eb-86dd-e37e78eec876",
+              "name": "resultado",
+              "value": "Não encontrei pedido com esse número e CPF/CNPJ nesta loja.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8fb9e76d-8005-4a52-8490-dd5f0339647f",
+      "name": "Não encontrado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1760,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Entrada": {
+      "main": [
+        [
+          {
+            "node": "Buscar pelo número Bling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar pelo número Bling": {
+      "main": [
+        [
+          {
+            "node": "Buscar pelo número do site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar pelo número do site": {
+      "main": [
+        [
+          {
+            "node": "Escolher pedido da loja",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escolher pedido da loja": {
+      "main": [
+        [
+          {
+            "node": "Achou?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detalhes do pedido": {
+      "main": [
+        [
+          {
+            "node": "Conferir CPF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conferir CPF": {
+      "main": [
+        [
+          {
+            "node": "CPF confere?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nome da situação": {
+      "main": [
+        [
+          {
+            "node": "Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Achou?": {
+      "main": [
+        [
+          {
+            "node": "Detalhes do pedido",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Não encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CPF confere?": {
+      "main": [
+        [
+          {
+            "node": "Nome da situação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Não encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
