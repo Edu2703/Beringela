@@ -60,14 +60,44 @@
     },
     {
       "parameters": {
-        "jsCode": "// ===== EDITE AQUI: nome da coluna da loja (igual ao cabecalho da planilha) => ID da loja no Bling =====\nconst LOJAS = {\n  '3.3 - Seu Fetiche - E-commerce': 205023189,\n  '2.3 - Surpresinhas - E-commerce': 204127665,\n  '1.1 - Sigilo - E - commerce': 204636452,\n  '1.1.1 Sigilo E-commerce Bagy': 205640286,\n  '1.2 - Sigilo Santa Felicidade': 203466110,\n  '1.3 - Whats Sigilo Entrega - Santa Felicidade': 204265522,\n  '1.4 - Whats Sigilo Retirada - Santa Felicidade': 204266326,\n  '2.31 IFOOD SURPRESINHAS.': 205351792,\n  '2.4 - Whats Surpresinhas Entrega / Retirada - Central': 204266330,\n  '5 - Mercado Livre MHB': 205134455,\n  '5 - Mercado Livre SPH': 206096286,\n  '5.4 - Edu Vilar ML': 204279939,\n  '5.1 - Amazon MHB': 204974626,\n  '5.3 - Shopee': 205333022,\n  '5.6.1 - TEMU SPH': 206092323,\n  '5.6.2 - TEMU MHB': 206095548,\n  '2.5 - TIKTOK SURPRESINHAS': 206098011,\n  '5.5 - MAGALU MHB': 205474577,\n  'DROPI_2025': 205381775,\n};\n// ======================================================================================================\n\nconst entrada = $('Recebe produto').first().json;\nconst linha = $input.first().json;\n\nif (!linha.SKU) {\n  throw new Error(`SKU \"${entrada.codigo}\" nao encontrado na aba \"Planilha modelo\".`);\n}\n\n// ID do produto: o que veio do cadastrador ou, se vazio, a coluna IdProduto da planilha\nconst idProduto = Number(entrada.idProduto || linha.IdProduto);\nif (!idProduto) {\n  throw new Error(`O SKU \"${linha.SKU}\" ainda nao tem IdProduto do Bling.`);\n}\n\n// compara nomes de coluna sem diferenca de maiusculas/minusculas e espacos\nfunction normalizar(texto) {\n  return String(texto).toLowerCase().replace(/\\s+/g, ' ').trim();\n}\nconst colunas = {};\nfor (const nome in linha) colunas[normalizar(nome)] = linha[nome];\n\nfunction lerPreco(valor) {\n  if (typeof valor === 'number') return valor;\n  let texto = String(valor).replace('R$', '').replace(/\\s/g, '');\n  if (texto.includes(',')) texto = texto.replace(/\\./g, '').replace(',', '.');\n  return Number(texto);\n}\n\nconst saida = [];\nfor (const nomeLoja in LOJAS) {\n  const chave = normalizar(nomeLoja);\n  if (!(chave in colunas)) {\n    throw new Error(`A coluna \"${nomeLoja}\" nao existe na planilha. Confira o nome no no \"Monta vinculos\".`);\n  }\n  const valor = colunas[chave];\n  if (valor === '' || valor === null || valor === undefined) continue; // sem preco = nao vende nessa loja\n  const preco = lerPreco(valor);\n  if (!preco) {\n    throw new Error(`Preco invalido na coluna \"${nomeLoja}\": ${valor}`);\n  }\n  saida.push({\n    json: {\n      codigo: String(linha.SKU),\n      preco: preco,\n      produto: { id: idProduto },\n      loja: { id: LOJAS[nomeLoja] }\n    }\n  });\n}\n\nreturn saida;"
+        "url": "https://api.bling.com.br/Api/v3/produtos/lojas",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "idProduto",
+              "value": "={{ $('Recebe produto').first().json.idProduto || $json.IdProduto }}"
+            },
+            {
+              "name": "limite",
+              "value": "100"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0006-4000-8000-000000000006",
+      "name": "Busca vinculos existentes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===== EDITE AQUI: nome da coluna da loja (igual ao cabecalho da planilha) => ID da loja no Bling =====\nconst LOJAS = {\n  '3.3 - Seu Fetiche - E-commerce': 205023189,\n  '2.3 - Surpresinhas - E-commerce': 204127665,\n  '1.1 - Sigilo - E - commerce': 204636452,\n  '1.1.1 Sigilo E-commerce Bagy': 205640286,\n  '1.2 - Sigilo Santa Felicidade': 203466110,\n  '1.3 - Whats Sigilo Entrega - Santa Felicidade': 204265522,\n  '1.4 - Whats Sigilo Retirada - Santa Felicidade': 204266326,\n  '2.31 IFOOD SURPRESINHAS.': 205351792,\n  '2.4 - Whats Surpresinhas Entrega / Retirada - Central': 204266330,\n  '5 - Mercado Livre MHB': 205134455,\n  '5 - Mercado Livre SPH': 206096286,\n  '5.4 - Edu Vilar ML': 204279939,\n  '5.1 - Amazon MHB': 204974626,\n  '5.3 - Shopee': 205333022,\n  '5.6.1 - TEMU SPH': 206092323,\n  '5.6.2 - TEMU MHB': 206095548,\n  '2.5 - TIKTOK SURPRESINHAS': 206098011,\n  '5.5 - MAGALU MHB': 205474577,\n  'DROPI_2025': 205381775,\n};\n// ======================================================================================================\n\nconst entrada = $('Recebe produto').first().json;\nconst linha = $('Busca precos na planilha').first().json;\n\nif (!linha.SKU) {\n  throw new Error(`SKU \"${entrada.codigo}\" nao encontrado na aba \"Planilha modelo\".`);\n}\n\n// ID do produto: o que veio do cadastrador ou, se vazio, a coluna IdProduto da planilha\nconst idProduto = Number(entrada.idProduto || linha.IdProduto);\nif (!idProduto) {\n  throw new Error(`O SKU \"${linha.SKU}\" ainda nao tem IdProduto do Bling.`);\n}\n\n// compara nomes de coluna sem diferenca de maiusculas/minusculas e espacos\nfunction normalizar(texto) {\n  return String(texto).toLowerCase().replace(/\\s+/g, ' ').trim();\n}\nconst colunas = {};\nfor (const nome in linha) colunas[normalizar(nome)] = linha[nome];\n\nfunction lerPreco(valor) {\n  if (typeof valor === 'number') return valor;\n  let texto = String(valor).replace('R$', '').replace(/\\s/g, '');\n  if (texto.includes(',')) texto = texto.replace(/\\./g, '').replace(',', '.');\n  return Number(texto);\n}\n\n// lojas em que o produto ja esta vinculado (para nao repetir)\nconst jaVinculadas = new Set(\n  ($input.first().json.data || [])\n    .filter(v => Number(v.produto && v.produto.id) === idProduto)\n    .map(v => Number(v.loja && v.loja.id))\n);\n\nconst saida = [];\nfor (const nomeLoja in LOJAS) {\n  const chave = normalizar(nomeLoja);\n  if (!(chave in colunas)) {\n    throw new Error(`A coluna \"${nomeLoja}\" nao existe na planilha. Confira o nome no no \"Monta vinculos\".`);\n  }\n  if (jaVinculadas.has(LOJAS[nomeLoja])) continue; // ja vinculado, pula\n  const valor = colunas[chave];\n  if (valor === '' || valor === null || valor === undefined) continue; // sem preco = nao vende nessa loja\n  const preco = lerPreco(valor);\n  if (!preco) {\n    throw new Error(`Preco invalido na coluna \"${nomeLoja}\": ${valor}`);\n  }\n  saida.push({\n    json: {\n      codigo: String(linha.SKU),\n      preco: preco,\n      produto: { id: idProduto },\n      loja: { id: LOJAS[nomeLoja] }\n    }\n  });\n}\n\nreturn saida;"
       },
       "id": "a1b2c3d4-0003-4000-8000-000000000003",
       "name": "Monta vinculos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        480,
+        720,
         0
       ]
     },
@@ -84,7 +114,7 @@
           "batching": {
             "batch": {
               "batchSize": 1,
-              "batchInterval": 400
+              "batchInterval": 1000
             }
           }
         }
@@ -94,7 +124,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        720,
+        960,
         0
       ]
     }
@@ -112,6 +142,17 @@
       ]
     },
     "Busca precos na planilha": {
+      "main": [
+        [
+          {
+            "node": "Busca vinculos existentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca vinculos existentes": {
       "main": [
         [
           {
