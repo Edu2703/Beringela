@@ -1,0 +1,93 @@
+{
+  "name": "Bling - Vincular produto Multiloja",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            { "name": "idProduto", "type": "number" },
+            { "name": "codigo" }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Recebe produto",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "COLE_AQUI_O_LINK_DA_SUA_PLANILHA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Precos"
+        },
+        "filtersUI": {
+          "values": [
+            { "lookupColumn": "Codigo", "lookupValue": "={{ $json.codigo }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "name": "Busca precos na planilha",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===== EDITE AQUI: nome da loja (igual esta escrito na planilha) => ID da loja no Bling =====\nconst LOJAS = {\n  'Shopee': 111111111,\n  'Mercado Livre': 222222222,\n};\n// ===========================================================================================\n\nconst produto = $('Recebe produto').first().json;\n\n// deixa a busca pelo nome da loja sem diferenca de maiusculas/minusculas e espacos\nconst lojas = {};\nfor (const nome in LOJAS) lojas[nome.trim().toLowerCase()] = LOJAS[nome];\n\nfunction lerPreco(valor) {\n  if (typeof valor === 'number') return valor;\n  let texto = String(valor || '').replace('R$', '').replace(/\\s/g, '');\n  if (texto.includes(',')) texto = texto.replace(/\\./g, '').replace(',', '.');\n  return Number(texto);\n}\n\nconst saida = [];\nfor (const linha of $input.all()) {\n  const nomeLoja = String(linha.json.Loja || '').trim();\n  const idLoja = lojas[nomeLoja.toLowerCase()];\n  if (!idLoja) {\n    throw new Error(`A loja \"${nomeLoja}\" nao esta na lista LOJAS do no \"Monta vinculos\".`);\n  }\n  const preco = lerPreco(linha.json.Preco);\n  if (!preco) {\n    throw new Error(`Preco invalido para a loja \"${nomeLoja}\": ${linha.json.Preco}`);\n  }\n  saida.push({\n    json: {\n      codigo: String(produto.codigo),\n      preco: preco,\n      produto: { id: Number(produto.idProduto) },\n      loja: { id: idLoja }\n    }\n  });\n}\n\nreturn saida;"
+      },
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "name": "Monta vinculos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.bling.com.br/Api/v3/produtos/lojas",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 400
+            }
+          }
+        }
+      },
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
+      "name": "Cria vinculo no Bling",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 0]
+    }
+  ],
+  "connections": {
+    "Recebe produto": {
+      "main": [[{ "node": "Busca precos na planilha", "type": "main", "index": 0 }]]
+    },
+    "Busca precos na planilha": {
+      "main": [[{ "node": "Monta vinculos", "type": "main", "index": 0 }]]
+    },
+    "Monta vinculos": {
+      "main": [[{ "node": "Cria vinculo no Bling", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" }
+}
