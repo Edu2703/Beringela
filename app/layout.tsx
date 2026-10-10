@@ -31,32 +31,20 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Berinjela" }],
   creator: "Berinjela",
-  metadataBase: new URL("https://sigilosexshop.com.br"),
-  alternates: {
-    canonical: "/",
-  },
+  metadataBase: new URL("https://berinjela.com.br"),
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://sigilosexshop.com.br",
+    url: "https://berinjela.com.br",
     title: "Berinjela | Suplemento para quem quer mais da vida",
     description:
       "Formulado para vitalidade, disposição e desejo. Entregue com discrição total. Compra segura.",
     siteName: "Berinjela",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Berinjela | Suplemento para quem quer mais da vida",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Berinjela | Suplemento para quem quer mais da vida",
     description: "Formulado para vitalidade, disposição e desejo. Compra segura e discreta.",
-    images: ["/og-image.png"],
   },
   robots: {
     index: true,
