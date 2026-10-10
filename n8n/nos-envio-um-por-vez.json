@@ -1,0 +1,92 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "a1b2c3d4-0007-4000-8000-000000000007",
+      "name": "Um por vez",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.bling.com.br/Api/v3/produtos/lojas",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
+      "name": "Cria vinculo no Bling",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        100
+      ],
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "seconds"
+      },
+      "id": "a1b2c3d4-0008-4000-8000-000000000008",
+      "name": "Espera 1s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        100
+      ],
+      "webhookId": "5b0c1d2e-0008-4000-8000-000000000008"
+    }
+  ],
+  "connections": {
+    "Um por vez": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Cria vinculo no Bling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria vinculo no Bling": {
+      "main": [
+        [
+          {
+            "node": "Espera 1s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera 1s": {
+      "main": [
+        [
+          {
+            "node": "Um por vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
