@@ -6,8 +6,13 @@
         "inputSource": "workflowInputs",
         "workflowInputs": {
           "values": [
-            { "name": "idProduto", "type": "number" },
-            { "name": "codigo" }
+            {
+              "name": "idProduto",
+              "type": "number"
+            },
+            {
+              "name": "codigo"
+            }
           ]
         }
       },
@@ -15,7 +20,10 @@
       "name": "Recebe produto",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
-      "position": [0, 0]
+      "position": [
+        0,
+        0
+      ]
     },
     {
       "parameters": {
@@ -28,11 +36,14 @@
         "sheetName": {
           "__rl": true,
           "mode": "name",
-          "value": "Precos"
+          "value": "Planilha modelo"
         },
         "filtersUI": {
           "values": [
-            { "lookupColumn": "Codigo", "lookupValue": "={{ $json.codigo }}" }
+            {
+              "lookupColumn": "SKU",
+              "lookupValue": "={{ $json.codigo }}"
+            }
           ]
         },
         "options": {}
@@ -41,17 +52,24 @@
       "name": "Busca precos na planilha",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [240, 0]
+      "position": [
+        240,
+        0
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
-        "jsCode": "// ===== EDITE AQUI: nome da loja (igual esta escrito na planilha) => ID da loja no Bling =====\nconst LOJAS = {\n  'Shopee': 111111111,\n  'Mercado Livre': 222222222,\n};\n// ===========================================================================================\n\nconst produto = $('Recebe produto').first().json;\n\n// deixa a busca pelo nome da loja sem diferenca de maiusculas/minusculas e espacos\nconst lojas = {};\nfor (const nome in LOJAS) lojas[nome.trim().toLowerCase()] = LOJAS[nome];\n\nfunction lerPreco(valor) {\n  if (typeof valor === 'number') return valor;\n  let texto = String(valor || '').replace('R$', '').replace(/\\s/g, '');\n  if (texto.includes(',')) texto = texto.replace(/\\./g, '').replace(',', '.');\n  return Number(texto);\n}\n\nconst saida = [];\nfor (const linha of $input.all()) {\n  const nomeLoja = String(linha.json.Loja || '').trim();\n  const idLoja = lojas[nomeLoja.toLowerCase()];\n  if (!idLoja) {\n    throw new Error(`A loja \"${nomeLoja}\" nao esta na lista LOJAS do no \"Monta vinculos\".`);\n  }\n  const preco = lerPreco(linha.json.Preco);\n  if (!preco) {\n    throw new Error(`Preco invalido para a loja \"${nomeLoja}\": ${linha.json.Preco}`);\n  }\n  saida.push({\n    json: {\n      codigo: String(produto.codigo),\n      preco: preco,\n      produto: { id: Number(produto.idProduto) },\n      loja: { id: idLoja }\n    }\n  });\n}\n\nreturn saida;"
+        "jsCode": "// ===== EDITE AQUI: nome da coluna da loja (igual ao cabecalho da planilha) => ID da loja no Bling =====\nconst LOJAS = {\n  '3.3 - Seu Fetiche - E-commerce': 111111111,\n  '2.3 - Surpresinhas - E-commerce': 222222222,\n  '1.1 - Sigilo - E - commerce': 333333333,\n};\n// ======================================================================================================\n\nconst entrada = $('Recebe produto').first().json;\nconst linha = $input.first().json;\n\nif (!linha.SKU) {\n  throw new Error(`SKU \"${entrada.codigo}\" nao encontrado na aba \"Planilha modelo\".`);\n}\n\n// ID do produto: o que veio do cadastrador ou, se vazio, a coluna IdProduto da planilha\nconst idProduto = Number(entrada.idProduto || linha.IdProduto);\nif (!idProduto) {\n  throw new Error(`O SKU \"${linha.SKU}\" ainda nao tem IdProduto do Bling.`);\n}\n\n// compara nomes de coluna sem diferenca de maiusculas/minusculas e espacos\nfunction normalizar(texto) {\n  return String(texto).toLowerCase().replace(/\\s+/g, ' ').trim();\n}\nconst colunas = {};\nfor (const nome in linha) colunas[normalizar(nome)] = linha[nome];\n\nfunction lerPreco(valor) {\n  if (typeof valor === 'number') return valor;\n  let texto = String(valor).replace('R$', '').replace(/\\s/g, '');\n  if (texto.includes(',')) texto = texto.replace(/\\./g, '').replace(',', '.');\n  return Number(texto);\n}\n\nconst saida = [];\nfor (const nomeLoja in LOJAS) {\n  const chave = normalizar(nomeLoja);\n  if (!(chave in colunas)) {\n    throw new Error(`A coluna \"${nomeLoja}\" nao existe na planilha. Confira o nome no no \"Monta vinculos\".`);\n  }\n  const valor = colunas[chave];\n  if (valor === '' || valor === null || valor === undefined) continue; // sem preco = nao vende nessa loja\n  const preco = lerPreco(valor);\n  if (!preco) {\n    throw new Error(`Preco invalido na coluna \"${nomeLoja}\": ${valor}`);\n  }\n  saida.push({\n    json: {\n      codigo: String(linha.SKU),\n      preco: preco,\n      produto: { id: idProduto },\n      loja: { id: LOJAS[nomeLoja] }\n    }\n  });\n}\n\nreturn saida;"
       },
       "id": "a1b2c3d4-0003-4000-8000-000000000003",
       "name": "Monta vinculos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [480, 0]
+      "position": [
+        480,
+        0
+      ]
     },
     {
       "parameters": {
@@ -75,19 +93,48 @@
       "name": "Cria vinculo no Bling",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [720, 0]
+      "position": [
+        720,
+        0
+      ]
     }
   ],
   "connections": {
     "Recebe produto": {
-      "main": [[{ "node": "Busca precos na planilha", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Busca precos na planilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Busca precos na planilha": {
-      "main": [[{ "node": "Monta vinculos", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Monta vinculos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Monta vinculos": {
-      "main": [[{ "node": "Cria vinculo no Bling", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Cria vinculo no Bling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "settings": { "executionOrder": "v1" }
+  "settings": {
+    "executionOrder": "v1"
+  }
 }
