@@ -1,0 +1,270 @@
+{
+  "name": "LIMPEZA - Vinculos do Mercado Livre",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c1000000-0001-4000-8000-000000000001",
+      "name": "Iniciar limpeza",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===== EDITE AQUI =====\nconst SIMULAR = true;   // true = so mostra o que seria apagado | false = apaga de verdade\nconst PRODUTOS = [];    // IDs dos produtos a limpar, ex.: [16718337312, 16718213043]. Vazio = todos os produtos\n// ======================\n\n// lojas do Mercado Livre (Gestao de Anuncios) - nao mexer\nconst LOJAS_ML = [205134455, 206096286, 204279939];\n\nreturn LOJAS_ML.map(idLoja => ({ json: { idLoja, simular: SIMULAR, produtos: PRODUTOS } }));"
+      },
+      "id": "c1000000-0002-4000-8000-000000000002",
+      "name": "Configuracao",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.bling.com.br/Api/v3/produtos/lojas",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "idLoja",
+              "value": "={{ $json.idLoja }}"
+            },
+            {
+              "name": "limite",
+              "value": "100"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pagina",
+                    "value": "={{ $pageCount + 1 }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.data || $response.body.data.length === 0 }}",
+              "limitPagesFetched": true,
+              "maxRequests": 50,
+              "requestInterval": 1000
+            }
+          }
+        }
+      },
+      "id": "c1000000-0003-4000-8000-000000000003",
+      "name": "Busca vinculos do ML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Junta os vinculos encontrados e separa so os do Mercado Livre\nconst config = $('Configuracao').first().json;\nconst lojasML = new Set($('Configuracao').all().map(i => Number(i.json.idLoja)));\nconst produtos = new Set((config.produtos || []).map(Number));\n\nconst vistos = new Set();\nconst saida = [];\nfor (const pagina of $input.all()) {\n  for (const v of (pagina.json.data || [])) {\n    const idLoja = Number(v.loja && v.loja.id);\n    const idProduto = Number(v.produto && v.produto.id);\n    if (!lojasML.has(idLoja)) continue;                          // seguranca: so lojas do ML\n    if (produtos.size && !produtos.has(idProduto)) continue;     // so os produtos escolhidos\n    if (!v.id || vistos.has(v.id)) continue;\n    vistos.add(v.id);\n    saida.push({ json: { idVinculo: v.id, idProduto, idLoja, idNaLoja: v.codigo, preco: v.preco } });\n  }\n}\n\nif (saida.length === 0) {\n  throw new Error('Nenhum vinculo do Mercado Livre encontrado. Nada para apagar.');\n}\nreturn saida;"
+      },
+      "id": "c1000000-0004-4000-8000-000000000004",
+      "name": "Seleciona vinculos do ML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1000000-0009-4000-8000-000000000009",
+              "leftValue": "={{ $('Configuracao').first().json.simular }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c1000000-0005-4000-8000-000000000005",
+      "name": "Apagar de verdade?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "c1000000-0006-4000-8000-000000000006",
+      "name": "Um por vez",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://api.bling.com.br/Api/v3/produtos/lojas/{{ $json.idVinculo }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "id": "c1000000-0007-4000-8000-000000000007",
+      "name": "Apaga vinculo no Bling",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "seconds"
+      },
+      "id": "c1000000-0008-4000-8000-000000000008",
+      "name": "Espera 1s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1680,
+        0
+      ],
+      "webhookId": "5b0c1d2e-0028-4000-8000-000000000028"
+    }
+  ],
+  "connections": {
+    "Iniciar limpeza": {
+      "main": [
+        [
+          {
+            "node": "Configuracao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuracao": {
+      "main": [
+        [
+          {
+            "node": "Busca vinculos do ML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Busca vinculos do ML": {
+      "main": [
+        [
+          {
+            "node": "Seleciona vinculos do ML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleciona vinculos do ML": {
+      "main": [
+        [
+          {
+            "node": "Apagar de verdade?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apagar de verdade?": {
+      "main": [
+        [
+          {
+            "node": "Um por vez",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Um por vez": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Apaga vinculo no Bling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apaga vinculo no Bling": {
+      "main": [
+        [
+          {
+            "node": "Espera 1s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Espera 1s": {
+      "main": [
+        [
+          {
+            "node": "Um por vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
