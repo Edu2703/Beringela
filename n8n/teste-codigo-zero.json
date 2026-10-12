@@ -14,6 +14,19 @@
     },
     {
       "parameters": {
+        "jsCode": "// ===== EDITE AQUI: ID do produto no Bling (so os numeros) =====\nconst ID_PRODUTO = 0;\n// ===============================================================\n\nif (!ID_PRODUTO) throw new Error('Coloque o ID do produto na linha 2 do no \"Configuracao\".');\nreturn [{ json: { idProduto: ID_PRODUTO } }];"
+      },
+      "id": "b1000000-0007-4000-8000-000000000007",
+      "name": "Configuracao",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
         "url": "https://api.bling.com.br/Api/v3/produtos/lojas",
         "authentication": "genericCredentialType",
         "genericAuthType": "oAuth2Api",
@@ -22,7 +35,7 @@
           "parameters": [
             {
               "name": "idProduto",
-              "value": "COLE_AQUI_O_ID_DO_SOLARIS"
+              "value": "={{ $json.idProduto }}"
             },
             {
               "name": "limite",
@@ -37,20 +50,20 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        240,
+        440,
         0
       ]
     },
     {
       "parameters": {
-        "jsCode": "// Teste: troca o \"ID na loja\" (codigo) de todos os vinculos deste produto para \"0\"\nconst vinculos = $input.first().json.data || [];\n\nif (vinculos.length === 0) {\n  throw new Error('Nenhum vinculo encontrado para este produto. Confira o idProduto no no \"Busca vinculos do produto\".');\n}\n\n// seguranca: so continua se todos os vinculos forem do mesmo produto\nconst produtos = new Set(vinculos.map(v => Number(v.produto && v.produto.id)));\nif (produtos.size > 1) {\n  throw new Error('A busca trouxe vinculos de mais de um produto. Parei para nao alterar o que nao devia.');\n}\n\nreturn vinculos.map(v => {\n  const corpo = { ...v };\n  delete corpo.id;\n  corpo.codigo = '0';\n  return { json: { idVinculo: v.id, loja: v.loja && v.loja.id, corpo: corpo } };\n});"
+        "jsCode": "// Teste: troca o \"ID na loja\" (codigo) dos vinculos DESTE produto para \"0\"\nconst idProduto = Number($('Configuracao').first().json.idProduto);\nconst todos = $input.first().json.data || [];\n\n// seguranca: usa so os vinculos do produto configurado, ignora qualquer outro\nconst vinculos = todos.filter(v => Number(v.produto && v.produto.id) === idProduto);\n\nif (vinculos.length === 0) {\n  throw new Error(`Nenhum vinculo encontrado para o produto ${idProduto}. A busca trouxe ${todos.length} vinculos de outros produtos.`);\n}\n\nreturn vinculos.map(v => {\n  const corpo = { ...v };\n  delete corpo.id;\n  corpo.codigo = '0';\n  return { json: { idVinculo: v.id, loja: v.loja && v.loja.id, corpo: corpo } };\n});"
       },
       "id": "b1000000-0003-4000-8000-000000000003",
       "name": "Troca ID na loja para 0",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        480,
+        680,
         0
       ]
     },
@@ -64,7 +77,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        720,
+        920,
         0
       ]
     },
@@ -84,7 +97,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        960,
+        1160,
         100
       ],
       "retryOnFail": true,
@@ -101,7 +114,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1200,
+        1400,
         100
       ],
       "webhookId": "5b0c1d2e-0016-4000-8000-000000000016"
@@ -112,7 +125,7 @@
       "main": [
         [
           {
-            "node": "Busca vinculos do produto",
+            "node": "Configuracao",
             "type": "main",
             "index": 0
           }
@@ -169,6 +182,17 @@
         [
           {
             "node": "Um por vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuracao": {
+      "main": [
+        [
+          {
+            "node": "Busca vinculos do produto",
             "type": "main",
             "index": 0
           }
