@@ -14,7 +14,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// ===== EDITE AQUI: ID do produto no Bling (so os numeros) =====\nconst ID_PRODUTO = 0;\n// ===============================================================\n\nif (!ID_PRODUTO) throw new Error('Coloque o ID do produto na linha 2 do no \"Configuracao\".');\nreturn [{ json: { idProduto: ID_PRODUTO } }];"
+        "jsCode": "// ===== EDITE AQUI =====\nconst ID_PRODUTO = 0;        // ID do produto no Bling (so os numeros)\nconst VALOR_ID_NA_LOJA = '00'; // valor que vai no campo \"ID na loja\"\nconst SO_A_LOJA = 0;         // ID de uma loja para testar so nela (0 = todas as lojas do produto)\n// ======================\n\nif (!ID_PRODUTO) throw new Error('Coloque o ID do produto na linha 2 do no \"Configuracao\".');\nreturn [{ json: { idProduto: ID_PRODUTO, valorIdNaLoja: VALOR_ID_NA_LOJA, soALoja: SO_A_LOJA } }];"
       },
       "id": "b1000000-0007-4000-8000-000000000007",
       "name": "Configuracao",
@@ -56,7 +56,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Teste: troca o \"ID na loja\" (codigo) dos vinculos DESTE produto para \"0\"\nconst idProduto = Number($('Configuracao').first().json.idProduto);\nconst todos = $input.first().json.data || [];\n\n// seguranca: usa so os vinculos do produto configurado, ignora qualquer outro\nconst vinculos = todos.filter(v => Number(v.produto && v.produto.id) === idProduto);\n\nif (vinculos.length === 0) {\n  throw new Error(`Nenhum vinculo encontrado para o produto ${idProduto}. A busca trouxe ${todos.length} vinculos de outros produtos.`);\n}\n\nreturn vinculos.map(v => {\n  // o ID do vinculo pode vir com nomes diferentes na resposta do Bling\n  const idVinculo = v.id || v.idProdutoLoja || (v.produtoLoja && v.produtoLoja.id);\n  if (!idVinculo) {\n    throw new Error('Nao achei o ID do vinculo. Campos recebidos: ' + JSON.stringify(v));\n  }\n  const corpo = { ...v };\n  corpo.id = idVinculo; // o Bling tambem quer o ID do vinculo dentro do corpo\n  corpo.codigo = '0';\n  return { json: { idVinculo: idVinculo, loja: v.loja && v.loja.id, corpo: corpo } };\n});"
+        "jsCode": "// Teste: troca o \"ID na loja\" (codigo) dos vinculos DESTE produto\nconst config = $('Configuracao').first().json;\nconst idProduto = Number(config.idProduto);\nconst todos = $input.first().json.data || [];\n\n// seguranca: usa so os vinculos do produto configurado, ignora qualquer outro\nlet vinculos = todos.filter(v => Number(v.produto && v.produto.id) === idProduto);\nif (Number(config.soALoja)) {\n  vinculos = vinculos.filter(v => Number(v.loja && v.loja.id) === Number(config.soALoja));\n}\n\nif (vinculos.length === 0) {\n  throw new Error(`Nenhum vinculo encontrado para o produto ${idProduto} (loja: ${config.soALoja || 'todas'}).`);\n}\n\nreturn vinculos.map(v => {\n  const idVinculo = v.id || v.idProdutoLoja || (v.produtoLoja && v.produtoLoja.id);\n  if (!idVinculo) {\n    throw new Error('Nao achei o ID do vinculo. Campos recebidos: ' + JSON.stringify(v));\n  }\n  const corpo = { ...v };\n  corpo.id = idVinculo;\n  corpo.codigo = String(config.valorIdNaLoja);\n  return { json: { idVinculo: idVinculo, loja: v.loja && v.loja.id, corpo: corpo } };\n});"
       },
       "id": "b1000000-0003-4000-8000-000000000003",
       "name": "Troca ID na loja para 0",
@@ -84,7 +84,7 @@
     {
       "parameters": {
         "method": "PUT",
-        "url": "={{ 'https://api.bling.com.br/Api/v3/produtos/lojas/' + $json.idVinculo }}",
+        "url": "=https://api.bling.com.br/Api/v3/produtos/lojas/{{ $json.idVinculo }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "oAuth2Api",
         "sendBody": true,
