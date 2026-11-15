@@ -32,3 +32,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# videos (arquivos pesados ficam fora do git)
+/material bruto/*
+/referencias/*
+/videos prontos/*
+!/material bruto/.gitkeep
+!/referencias/.gitkeep
+!/videos prontos/.gitkeep
