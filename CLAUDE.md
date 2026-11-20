@@ -15,7 +15,7 @@ Landing page de vendas do **Berinjela**, suplemento natural (vitalidade, disposi
 - Por ser estático, **não dá** para usar API routes, server actions, middleware nem otimização de imagem do Next (`images.unoptimized: true`).
 
 ## Comandos
-- `npm install`: instala as dependências. O `npm ci` falha porque o `package-lock.json` está fora de sincronia. Não faça commit do lockfile alterado sem o Edú pedir.
+- `npm ci`: instala as dependências exatamente como estão no `package-lock.json`.
 - `npm run dev`: servidor local.
 - `npm run build`: gera o site estático. Rode antes de dar a tarefa por encerrada.
 - `npm run lint`: ESLint (config `next/core-web-vitals`).
@@ -42,4 +42,4 @@ Landing page de vendas do **Berinjela**, suplemento natural (vitalidade, disposi
 
 ## Cuidados
 - Suplemento não pode prometer cura nem tratamento de doença (regra da Anvisa). Evite textos como "cura" ou "trata disfunção".
-- `next@14.2.5` tem aviso de falha de segurança conhecida. Atualizar é uma decisão a confirmar com o Edú antes.
+- O Next.js está na versão 14.2.35 (a correção de segurança da linha 14). Pular para a 15 ou a 16 exige mudanças no código e no React. Combine com o Edú antes de fazer isso.
